@@ -16,6 +16,10 @@ import {
   Target,
   Layers,
   GraduationCap,
+  Search,
+  SlidersHorizontal,
+  Compass,
+  BookOpenText,
 } from 'lucide-react';
 import {
   ROADMAP_DATA,
@@ -28,6 +32,10 @@ const App = () => {
   const [expandedPhases, setExpandedPhases] = useState(['fase-1']);
   const [topicViews, setTopicViews] = useState({});
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('roadmap');
+  const [selectedRoute, setSelectedRoute] = useState('all');
+  const [selectedLevel, setSelectedLevel] = useState('mid');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const savedProgress = localStorage.getItem('aiEngineerRoadmapProgress');
@@ -88,6 +96,93 @@ const App = () => {
     () => ROADMAP_DATA.reduce((acc, phase) => acc + phase.estimatedWeeks, 0),
     []
   );
+
+  const LEVEL_CONFIG = {
+    junior: {
+      label: 'Junior',
+      paceMultiplier: 1.2,
+      guidance:
+        'Prioriza fundamentos y proyectos end-to-end con buena documentacion tecnica.',
+    },
+    mid: {
+      label: 'Mid',
+      paceMultiplier: 1,
+      guidance:
+        'Enfocate en impacto de negocio, evaluacion de calidad y despliegues confiables.',
+    },
+    senior: {
+      label: 'Senior',
+      paceMultiplier: 0.85,
+      guidance:
+        'Orienta el estudio a arquitectura, gobernanza y escalado multi-equipo.',
+    },
+  };
+
+  const normalizeText = (value) =>
+    value
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+  const routeTagMap = useMemo(() => {
+    const map = { all: [] };
+    SPECIALIZATION_ROUTES.forEach((route) => {
+      const tags = [
+        ...route.focus,
+        ...route.stack,
+        ...route.outcomes,
+        route.title,
+        route.summary,
+      ]
+        .map((tag) => normalizeText(tag))
+        .filter((tag) => tag.length >= 4);
+      map[route.id] = tags;
+    });
+    return map;
+  }, []);
+
+  const filteredRoadmap = useMemo(() => {
+    const normalizedSearch = normalizeText(searchTerm.trim());
+    const routeTags = routeTagMap[selectedRoute] || [];
+
+    return ROADMAP_DATA.map((phase) => {
+      const filteredTopics = phase.topics
+        .map((topic) => {
+          const filteredItems = topic.items.filter((item) => {
+            const haystack = normalizeText(
+              `${phase.title} ${topic.title} ${item.text} ${phase.description}`
+            );
+            const matchesSearch = normalizedSearch ? haystack.includes(normalizedSearch) : true;
+            const matchesRoute =
+              selectedRoute === 'all' ? true : routeTags.some((tag) => haystack.includes(tag));
+            return matchesSearch && matchesRoute;
+          });
+
+          return { ...topic, items: filteredItems };
+        })
+        .filter((topic) => topic.items.length > 0);
+
+      return { ...phase, topics: filteredTopics };
+    }).filter((phase) => phase.topics.length > 0);
+  }, [searchTerm, selectedRoute, routeTagMap]);
+
+  const visibleItems = useMemo(() => {
+    let count = 0;
+    filteredRoadmap.forEach((phase) =>
+      phase.topics.forEach((topic) => {
+        count += topic.items.length;
+      })
+    );
+    return count;
+  }, [filteredRoadmap]);
+
+  const adjustedWeeks = Math.ceil(totalEstimatedWeeks * LEVEL_CONFIG[selectedLevel].paceMultiplier);
+
+  const tabs = [
+    { id: 'roadmap', label: 'Roadmap', icon: BookOpenText },
+    { id: 'specializations', label: 'Especializaciones', icon: Compass },
+    { id: 'career', label: 'Carrera', icon: BriefcaseBusiness },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
@@ -164,7 +259,29 @@ const App = () => {
           </div>
         </header>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8 sticky top-4 z-40">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 md:p-4 mb-6 sticky top-4 z-40">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            {tabs.map((tab) => {
+              const TabIcon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                    isActive
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <TabIcon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="flex justify-between items-end mb-2">
             <div>
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-1">
@@ -189,391 +306,501 @@ const App = () => {
           </div>
         </div>
 
-        <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-8">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="bg-blue-100 text-blue-700 p-2 rounded-xl">
-              <Route className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-800">
-                Subrutas de Especialización
-              </h2>
-              <p className="text-sm text-slate-500">
-                Elige un enfoque principal según el tipo de problemas que quieres resolver.
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {SPECIALIZATION_ROUTES.map((route) => (
-              <article
-                key={route.id}
-                className="rounded-2xl border border-slate-200 p-4 bg-slate-50/60 hover:border-blue-200 transition-colors"
-              >
-                <h3 className="font-bold text-slate-800 text-base mb-1">{route.title}</h3>
-                <p className="text-sm text-slate-600 mb-3">{route.summary}</p>
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
-                      Foco técnico
-                    </div>
-                    <ul className="text-sm text-slate-700 space-y-1">
-                      {route.focus.map((item) => (
-                        <li key={`${route.id}-focus-${item}`}>• {item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
-                      Stack sugerido
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {route.stack.map((tech) => (
-                        <span
-                          key={`${route.id}-stack-${tech}`}
-                          className="text-xs font-medium bg-white border border-slate-200 text-slate-600 px-2 py-1 rounded-md"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
-                      Proyectos objetivo
-                    </div>
-                    <ul className="text-sm text-slate-700 space-y-1">
-                      {route.outcomes.map((outcome) => (
-                        <li key={`${route.id}-outcome-${outcome}`}>• {outcome}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-8">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="bg-emerald-100 text-emerald-700 p-2 rounded-xl">
-              <BriefcaseBusiness className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold text-slate-800">Rumbos Laborales</h2>
-              <p className="text-sm text-slate-500">
-                Qué se espera de ti en cada etapa de carrera y cómo demostrar nivel.
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {CAREER_PATHS.map((career) => (
-              <article
-                key={career.id}
-                className="rounded-2xl border border-slate-200 p-4 bg-slate-50/60"
-              >
-                <p className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded w-max mb-2">
-                  {career.title}
-                </p>
-                <h3 className="font-bold text-slate-800 mb-3">{career.profile}</h3>
-                <div className="mb-3">
-                  <div className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
-                    Responsabilidades
-                  </div>
-                  <ul className="text-sm text-slate-700 space-y-1">
-                    {career.responsibilities.map((item) => (
-                      <li key={`${career.id}-resp-${item}`}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
-                    Senales de contratacion
-                  </div>
-                  <ul className="text-sm text-slate-700 space-y-1">
-                    {career.hiringSignals.map((item) => (
-                      <li key={`${career.id}-signal-${item}`}>• {item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl shadow-sm p-6 md:p-8 mb-8 text-white">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex gap-3">
-              <div className="bg-white/10 p-2 rounded-lg h-max">
-                <Target className="w-5 h-5" />
+        {activeTab === 'specializations' && (
+          <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-8">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-blue-100 text-blue-700 p-2 rounded-xl">
+                <Route className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Define un objetivo trimestral</h3>
-                <p className="text-sm text-slate-300">
-                  Enfocate en una subruta principal y un proyecto ancla.
+                <h2 className="text-xl md:text-2xl font-bold text-slate-800">
+                  Subrutas de Especialización
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Elige un enfoque principal según el tipo de problemas que quieres resolver.
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
-              <div className="bg-white/10 p-2 rounded-lg h-max">
-                <Layers className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Construye portafolio por modulos</h3>
-                <p className="text-sm text-slate-300">
-                  Cada fase debe terminar con una entrega publica verificable.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="bg-white/10 p-2 rounded-lg h-max">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-semibold mb-1">Evalua progreso con evidencia</h3>
-                <p className="text-sm text-slate-300">
-                  Mide calidad por metricas, documentacion y resultados en produccion.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="mb-5">
-          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Modulos de Estudio</h2>
-          <p className="text-sm text-slate-500 mt-1">
-            Expande cada fase y usa vista checklist o timelapse para ejecutar tu plan diario.
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          {ROADMAP_DATA.map((phase, index) => {
-            const PhaseIcon = phase.icon;
-            const isExpanded = expandedPhases.includes(phase.id);
-
-            let phaseTotal = 0;
-            let phaseCompleted = 0;
-            phase.topics.forEach((t) =>
-              t.items.forEach((i) => {
-                phaseTotal++;
-                if (progress[i.id]) phaseCompleted++;
-              })
-            );
-            const isPhaseComplete = phaseTotal > 0 && phaseTotal === phaseCompleted;
-
-            return (
-              <div
-                key={phase.id}
-                className={`bg-white rounded-3xl border transition-all duration-300 overflow-hidden ${
-                  isExpanded
-                    ? 'border-blue-300 shadow-xl shadow-blue-50'
-                    : 'border-slate-200 shadow-sm hover:border-blue-200'
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => handleTogglePhase(phase.id)}
-                  className={`w-full text-left px-6 py-5 md:py-6 flex items-center justify-between focus:outline-none transition-colors ${
-                    isExpanded ? 'bg-slate-50' : 'bg-white'
-                  }`}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {SPECIALIZATION_ROUTES.map((route) => (
+                <article
+                  key={route.id}
+                  className="rounded-2xl border border-slate-200 p-4 bg-slate-50/60 hover:border-blue-200 transition-colors"
                 >
-                  <div className="flex items-center space-x-5">
-                    <div
-                      className={`p-3 rounded-xl transition-colors ${
-                        isPhaseComplete
-                          ? 'bg-green-100 text-green-600'
-                          : 'bg-blue-100 text-blue-600'
-                      }`}
-                    >
-                      <PhaseIcon className="w-6 h-6 md:w-8 md:h-8" />
+                  <h3 className="font-bold text-slate-800 text-base mb-1">{route.title}</h3>
+                  <p className="text-sm text-slate-600 mb-3">{route.summary}</p>
+                  <div className="space-y-3">
+                    <div>
+                      <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                        Foco técnico
+                      </div>
+                      <ul className="text-sm text-slate-700 space-y-1">
+                        {route.focus.map((item) => (
+                          <li key={`${route.id}-focus-${item}`}>• {item}</li>
+                        ))}
+                      </ul>
                     </div>
                     <div>
-                      <h3
-                        className={`text-xl md:text-2xl font-bold ${
-                          isPhaseComplete
-                            ? 'text-slate-500 line-through decoration-2'
-                            : 'text-slate-800'
+                      <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                        Stack sugerido
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {route.stack.map((tech) => (
+                          <span
+                            key={`${route.id}-stack-${tech}`}
+                            className="text-xs font-medium bg-white border border-slate-200 text-slate-600 px-2 py-1 rounded-md"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                        Proyectos objetivo
+                      </div>
+                      <ul className="text-sm text-slate-700 space-y-1">
+                        {route.outcomes.map((outcome) => (
+                          <li key={`${route.id}-outcome-${outcome}`}>• {outcome}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'career' && (
+          <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-8">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-emerald-100 text-emerald-700 p-2 rounded-xl">
+                <BriefcaseBusiness className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold text-slate-800">
+                  Rumbos Laborales
+                </h2>
+                <p className="text-sm text-slate-500">
+                  Qué se espera de ti en cada etapa de carrera y cómo demostrar nivel.
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {CAREER_PATHS.map((career) => (
+                <article
+                  key={career.id}
+                  className="rounded-2xl border border-slate-200 p-4 bg-slate-50/60"
+                >
+                  <p className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded w-max mb-2">
+                    {career.title}
+                  </p>
+                  <h3 className="font-bold text-slate-800 mb-3">{career.profile}</h3>
+                  <div className="mb-3">
+                    <div className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                      Responsabilidades
+                    </div>
+                    <ul className="text-sm text-slate-700 space-y-1">
+                      {career.responsibilities.map((item) => (
+                        <li key={`${career.id}-resp-${item}`}>• {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                      Senales de contratacion
+                    </div>
+                    <ul className="text-sm text-slate-700 space-y-1">
+                      {career.hiringSignals.map((item) => (
+                        <li key={`${career.id}-signal-${item}`}>• {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'roadmap' && (
+          <>
+            <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="lg:col-span-2">
+                  <label className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5 block">
+                    Buscar temas
+                  </label>
+                  <div className="relative">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      type="text"
+                      placeholder="Ej: RAG, Kubernetes, Backpropagation, LoRA..."
+                      className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5 block">
+                    Nivel de experiencia
+                  </label>
+                  <select
+                    value={selectedLevel}
+                    onChange={(e) => setSelectedLevel(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-white"
+                  >
+                    <option value="junior">Junior</option>
+                    <option value="mid">Mid</option>
+                    <option value="senior">Senior</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <div className="lg:col-span-2">
+                  <label className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1.5 block">
+                    Filtro por subruta
+                  </label>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedRoute('all')}
+                      className={`text-xs font-semibold px-3 py-1.5 rounded-full border ${
+                        selectedRoute === 'all'
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-slate-600 border-slate-200'
+                      }`}
+                    >
+                      Todas
+                    </button>
+                    {SPECIALIZATION_ROUTES.map((route) => (
+                      <button
+                        key={route.id}
+                        type="button"
+                        onClick={() => setSelectedRoute(route.id)}
+                        className={`text-xs font-semibold px-3 py-1.5 rounded-full border ${
+                          selectedRoute === route.id
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'bg-white text-slate-600 border-slate-200'
                         }`}
                       >
-                        <span className="text-sm font-semibold text-slate-400 mr-2">
-                          Modulo {index + 1}
-                        </span>
-                        {phase.title}
-                      </h3>
-                      <p className="text-sm md:text-base text-slate-500 mt-1 hidden sm:block max-w-2xl">
-                        {phase.description}
-                      </p>
-                    </div>
+                        {route.title}
+                      </button>
+                    ))}
                   </div>
-                  <div className="flex items-center space-x-3 md:space-x-5">
-                    <div className="hidden md:flex flex-col items-end">
-                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-                        Duracion
-                      </span>
-                      <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
-                        {phase.estimatedWeeks} semanas
-                      </span>
-                    </div>
-                    <span
-                      className={`text-sm font-bold px-3 py-1 rounded-full border ${
-                        isPhaseComplete
-                          ? 'bg-green-50 border-green-200 text-green-600'
-                          : 'bg-slate-50 border-slate-200 text-slate-500'
+                </div>
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <SlidersHorizontal className="w-4 h-4 text-slate-500" />
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+                      Perfil activo
+                    </p>
+                  </div>
+                  <p className="font-semibold text-slate-800 text-sm mb-1">
+                    {LEVEL_CONFIG[selectedLevel].label} • ~{adjustedWeeks} semanas
+                  </p>
+                  <p className="text-xs text-slate-600">{LEVEL_CONFIG[selectedLevel].guidance}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+                <span>{visibleItems} temas visibles con filtros actuales</span>
+                <span>
+                  Ruta: {selectedRoute === 'all' ? 'Generalista' : selectedRoute.replace('route-', '')}
+                </span>
+              </div>
+            </section>
+
+            <section className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl shadow-sm p-6 md:p-8 mb-8 text-white">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex gap-3">
+                  <div className="bg-white/10 p-2 rounded-lg h-max">
+                    <Target className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">Define un objetivo trimestral</h3>
+                    <p className="text-sm text-slate-300">
+                      Enfocate en una subruta principal y un proyecto ancla.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="bg-white/10 p-2 rounded-lg h-max">
+                    <Layers className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">Construye portafolio por modulos</h3>
+                    <p className="text-sm text-slate-300">
+                      Cada fase debe terminar con una entrega publica verificable.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div className="bg-white/10 p-2 rounded-lg h-max">
+                    <GraduationCap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">Evalua progreso con evidencia</h3>
+                    <p className="text-sm text-slate-300">
+                      Mide calidad por metricas, documentacion y resultados en produccion.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div className="mb-5">
+              <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+                Modulos de Estudio
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Expande cada fase y usa vista checklist o timelapse para ejecutar tu plan diario.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {filteredRoadmap.length === 0 && (
+                <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+                  <p className="text-slate-700 font-semibold mb-1">
+                    No hay resultados con estos filtros.
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    Prueba limpiar la busqueda o cambiar la subruta.
+                  </p>
+                </div>
+              )}
+              {filteredRoadmap.map((phase, index) => {
+                const PhaseIcon = phase.icon;
+                const isExpanded = expandedPhases.includes(phase.id);
+
+                let phaseTotal = 0;
+                let phaseCompleted = 0;
+                phase.topics.forEach((t) =>
+                  t.items.forEach((i) => {
+                    phaseTotal++;
+                    if (progress[i.id]) phaseCompleted++;
+                  })
+                );
+                const isPhaseComplete = phaseTotal > 0 && phaseTotal === phaseCompleted;
+
+                return (
+                  <div
+                    key={phase.id}
+                    className={`bg-white rounded-3xl border transition-all duration-300 overflow-hidden ${
+                      isExpanded
+                        ? 'border-blue-300 shadow-xl shadow-blue-50'
+                        : 'border-slate-200 shadow-sm hover:border-blue-200'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePhase(phase.id)}
+                      className={`w-full text-left px-6 py-5 md:py-6 flex items-center justify-between focus:outline-none transition-colors ${
+                        isExpanded ? 'bg-slate-50' : 'bg-white'
                       }`}
                     >
-                      {phaseCompleted}/{phaseTotal}
-                    </span>
-                    <div
-                      className={`p-2 rounded-full transition-colors ${
-                        isExpanded ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'
-                      }`}
-                    >
-                      {isExpanded ? (
-                        <ChevronUp className="w-5 h-5" />
-                      ) : (
-                        <ChevronDown className="w-5 h-5" />
-                      )}
-                    </div>
-                  </div>
-                </button>
-
-                {isExpanded && (
-                  <div className="p-6 md:p-8 border-t border-slate-100 bg-slate-50/50 animate-in slide-in-from-top-4 duration-300">
-                    <p className="text-sm text-slate-600 mb-6 sm:hidden">{phase.description}</p>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {phase.topics.map((topic) => {
-                        const activeView = topicViews[topic.id] || 'checklist';
-
-                        return (
-                          <div
-                            key={topic.id}
-                            className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col h-full"
+                      <div className="flex items-center space-x-5">
+                        <div
+                          className={`p-3 rounded-xl transition-colors ${
+                            isPhaseComplete
+                              ? 'bg-green-100 text-green-600'
+                              : 'bg-blue-100 text-blue-600'
+                          }`}
+                        >
+                          <PhaseIcon className="w-6 h-6 md:w-8 md:h-8" />
+                        </div>
+                        <div>
+                          <h3
+                            className={`text-xl md:text-2xl font-bold ${
+                              isPhaseComplete
+                                ? 'text-slate-500 line-through decoration-2'
+                                : 'text-slate-800'
+                            }`}
                           >
-                            <div className="mb-4">
-                              <div className="flex justify-between items-start mb-3">
-                                <h4 className="font-bold text-slate-800 text-lg leading-tight pr-2">
-                                  {topic.title}
-                                </h4>
-                                <span className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-md whitespace-nowrap">
-                                  {topic.estimatedWeeks} sem
-                                </span>
-                              </div>
+                            <span className="text-sm font-semibold text-slate-400 mr-2">
+                              Modulo {index + 1}
+                            </span>
+                            {phase.title}
+                          </h3>
+                          <p className="text-sm md:text-base text-slate-500 mt-1 hidden sm:block max-w-2xl">
+                            {phase.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3 md:space-x-5">
+                        <div className="hidden md:flex flex-col items-end">
+                          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
+                            Duracion
+                          </span>
+                          <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                            {phase.estimatedWeeks} semanas
+                          </span>
+                        </div>
+                        <span
+                          className={`text-sm font-bold px-3 py-1 rounded-full border ${
+                            isPhaseComplete
+                              ? 'bg-green-50 border-green-200 text-green-600'
+                              : 'bg-slate-50 border-slate-200 text-slate-500'
+                          }`}
+                        >
+                          {phaseCompleted}/{phaseTotal}
+                        </span>
+                        <div
+                          className={`p-2 rounded-full transition-colors ${
+                            isExpanded ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'
+                          }`}
+                        >
+                          {isExpanded ? (
+                            <ChevronUp className="w-5 h-5" />
+                          ) : (
+                            <ChevronDown className="w-5 h-5" />
+                          )}
+                        </div>
+                      </div>
+                    </button>
 
-                              <div className="flex space-x-2 bg-slate-100 p-1 rounded-lg w-fit">
-                                <button
-                                  type="button"
-                                  onClick={() => setTopicView(topic.id, 'checklist')}
-                                  className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                                    activeView === 'checklist'
-                                      ? 'bg-white text-blue-600 shadow-sm'
-                                      : 'text-slate-500 hover:text-slate-700'
-                                  }`}
-                                >
-                                  <ListTodo className="w-3.5 h-3.5" />
-                                  <span>Checklist</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setTopicView(topic.id, 'timelapse')}
-                                  className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                                    activeView === 'timelapse'
-                                      ? 'bg-white text-blue-600 shadow-sm'
-                                      : 'text-slate-500 hover:text-slate-700'
-                                  }`}
-                                >
-                                  <Timer className="w-3.5 h-3.5" />
-                                  <span>Timelapse</span>
-                                </button>
-                              </div>
-                            </div>
+                    {isExpanded && (
+                      <div className="p-6 md:p-8 border-t border-slate-100 bg-slate-50/50 animate-in slide-in-from-top-4 duration-300">
+                        <p className="text-sm text-slate-600 mb-6 sm:hidden">{phase.description}</p>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {phase.topics.map((topic) => {
+                            const activeView = topicViews[topic.id] || 'checklist';
 
-                            {activeView === 'checklist' && (
-                              <ul className="space-y-3 flex-grow animate-in fade-in duration-200">
-                                {topic.items.map((item) => {
-                                  const isChecked = !!progress[item.id];
-                                  return (
-                                    <li
-                                      key={item.id}
-                                      className="flex items-start space-x-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors"
-                                      onClick={() => handleToggleItem(item.id)}
+                            return (
+                              <div
+                                key={topic.id}
+                                className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col h-full"
+                              >
+                                <div className="mb-4">
+                                  <div className="flex justify-between items-start mb-3">
+                                    <h4 className="font-bold text-slate-800 text-lg leading-tight pr-2">
+                                      {topic.title}
+                                    </h4>
+                                    <span className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded-md whitespace-nowrap">
+                                      {topic.estimatedWeeks} sem
+                                    </span>
+                                  </div>
+
+                                  <div className="flex space-x-2 bg-slate-100 p-1 rounded-lg w-fit">
+                                    <button
+                                      type="button"
+                                      onClick={() => setTopicView(topic.id, 'checklist')}
+                                      className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                                        activeView === 'checklist'
+                                          ? 'bg-white text-blue-600 shadow-sm'
+                                          : 'text-slate-500 hover:text-slate-700'
+                                      }`}
                                     >
-                                      <button
-                                        type="button"
-                                        className="mt-0.5 focus:outline-none flex-shrink-0"
-                                      >
-                                        {isChecked ? (
-                                          <CheckCircle2 className="w-5 h-5 text-green-500" />
-                                        ) : (
-                                          <Circle className="w-5 h-5 text-slate-300 group-hover:text-blue-400 transition-colors" />
-                                        )}
-                                      </button>
-                                      <span
-                                        className={`text-sm leading-snug transition-colors pt-0.5 ${
-                                          isChecked
-                                            ? 'text-slate-400 line-through'
-                                            : 'text-slate-700 group-hover:text-slate-900'
-                                        }`}
-                                      >
-                                        {item.text}
-                                      </span>
-                                    </li>
-                                  );
-                                })}
-                              </ul>
-                            )}
+                                      <ListTodo className="w-3.5 h-3.5" />
+                                      <span>Checklist</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setTopicView(topic.id, 'timelapse')}
+                                      className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                                        activeView === 'timelapse'
+                                          ? 'bg-white text-blue-600 shadow-sm'
+                                          : 'text-slate-500 hover:text-slate-700'
+                                      }`}
+                                    >
+                                      <Timer className="w-3.5 h-3.5" />
+                                      <span>Timelapse</span>
+                                    </button>
+                                  </div>
+                                </div>
 
-                            {activeView === 'timelapse' && (
-                              <div className="flex-grow pt-2 animate-in fade-in duration-200">
-                                <div className="pl-6 border-l-2 border-slate-200 space-y-6 relative">
-                                  {topic.items.map((item) => {
-                                    const isChecked = !!progress[item.id];
-                                    return (
-                                      <div key={`tl-${item.id}`} className="relative">
-                                        <div
-                                          className={`absolute -left-[33px] top-0.5 w-4 h-4 rounded-full border-2 bg-white flex items-center justify-center ${
-                                            isChecked ? 'border-green-500' : 'border-blue-400'
-                                          }`}
+                                {activeView === 'checklist' && (
+                                  <ul className="space-y-3 flex-grow animate-in fade-in duration-200">
+                                    {topic.items.map((item) => {
+                                      const isChecked = !!progress[item.id];
+                                      return (
+                                        <li
+                                          key={item.id}
+                                          className="flex items-start space-x-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors"
+                                          onClick={() => handleToggleItem(item.id)}
                                         >
-                                          {isChecked && (
-                                            <Check className="w-2.5 h-2.5 text-green-500" />
-                                          )}
-                                        </div>
-
-                                        <div className="flex flex-col mb-1">
-                                          <span
-                                            className={`text-xs font-bold inline-block px-2 py-0.5 rounded w-max mb-1 ${
-                                              isChecked
-                                                ? 'bg-green-50 text-green-700'
-                                                : 'bg-blue-50 text-blue-700'
-                                            }`}
+                                          <button
+                                            type="button"
+                                            className="mt-0.5 focus:outline-none flex-shrink-0"
                                           >
-                                            Dedicacion: {item.duration}
-                                          </span>
-                                          <p
-                                            className={`text-sm font-medium ${
+                                            {isChecked ? (
+                                              <CheckCircle2 className="w-5 h-5 text-green-500" />
+                                            ) : (
+                                              <Circle className="w-5 h-5 text-slate-300 group-hover:text-blue-400 transition-colors" />
+                                            )}
+                                          </button>
+                                          <span
+                                            className={`text-sm leading-snug transition-colors pt-0.5 ${
                                               isChecked
                                                 ? 'text-slate-400 line-through'
-                                                : 'text-slate-700'
+                                                : 'text-slate-700 group-hover:text-slate-900'
                                             }`}
                                           >
                                             {item.text}
-                                          </p>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
+                                          </span>
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
+                                )}
+
+                                {activeView === 'timelapse' && (
+                                  <div className="flex-grow pt-2 animate-in fade-in duration-200">
+                                    <div className="pl-6 border-l-2 border-slate-200 space-y-6 relative">
+                                      {topic.items.map((item) => {
+                                        const isChecked = !!progress[item.id];
+                                        return (
+                                          <div key={`tl-${item.id}`} className="relative">
+                                            <div
+                                              className={`absolute -left-[33px] top-0.5 w-4 h-4 rounded-full border-2 bg-white flex items-center justify-center ${
+                                                isChecked ? 'border-green-500' : 'border-blue-400'
+                                              }`}
+                                            >
+                                              {isChecked && (
+                                                <Check className="w-2.5 h-2.5 text-green-500" />
+                                              )}
+                                            </div>
+
+                                            <div className="flex flex-col mb-1">
+                                              <span
+                                                className={`text-xs font-bold inline-block px-2 py-0.5 rounded w-max mb-1 ${
+                                                  isChecked
+                                                    ? 'bg-green-50 text-green-700'
+                                                    : 'bg-blue-50 text-blue-700'
+                                                }`}
+                                              >
+                                                Dedicacion: {item.duration}
+                                              </span>
+                                              <p
+                                                className={`text-sm font-medium ${
+                                                  isChecked
+                                                    ? 'text-slate-400 line-through'
+                                                    : 'text-slate-700'
+                                                }`}
+                                              >
+                                                {item.text}
+                                              </p>
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
