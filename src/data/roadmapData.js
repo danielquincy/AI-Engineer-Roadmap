@@ -24,17 +24,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f1-t1-i1',
             duration: '2 Días',
-            text: 'Vectores y Matrices (Producto punto, cruz, Hadamard)',
+            text: 'Vectores y matrices en ML: producto punto, norma L1/L2, proyección, multiplicación matricial y broadcasting',
           },
           {
             id: 'f1-t1-i2',
             duration: '2 Días',
-            text: 'Autovalores y Autovectores (Eigenvalues/vectors)',
+            text: 'Autovalores y autovectores: interpretación geométrica, diagonalización y relación con estabilidad de transformaciones',
           },
           {
             id: 'f1-t1-i3',
             duration: '3 Días',
-            text: 'Descomposición en Valores Singulares (SVD) y PCA',
+            text: 'SVD y PCA: reducción de dimensionalidad, varianza explicada y compresión de features con scikit-learn',
           },
         ],
       },
@@ -46,17 +46,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f1-t2-i1',
             duration: '2 Días',
-            text: 'Derivadas parciales y Regla de la Cadena',
+            text: 'Derivadas parciales, gradiente, jacobiano y regla de la cadena aplicada a redes neuronales',
           },
           {
             id: 'f1-t2-i2',
             duration: '2 Días',
-            text: 'Descenso del Gradiente (Gradient Descent)',
+            text: 'Descenso de gradiente (batch, mini-batch, SGD): learning rate, convergencia e inestabilidad numérica',
           },
           {
             id: 'f1-t2-i3',
             duration: '3 Días',
-            text: 'Funciones de pérdida y superficies de error',
+            text: 'Funciones de pérdida (MSE, MAE, Cross-Entropy), convexidad y superficies de error',
           },
         ],
       },
@@ -68,17 +68,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f1-t3-i1',
             duration: '2 Días',
-            text: 'Distribuciones de probabilidad (Normal, Binomial)',
+            text: 'Distribuciones clave (Bernoulli, Binomial, Poisson, Normal): cuándo usarlas y cómo estimar parámetros',
           },
           {
             id: 'f1-t3-i2',
             duration: '2 Días',
-            text: 'Teorema de Bayes e Inferencia Bayesiana',
+            text: 'Teorema de Bayes: posterior, prior y likelihood; inferencia bayesiana para clasificación simple',
           },
           {
             id: 'f1-t3-i3',
             duration: '3 Días',
-            text: 'Pruebas de hipótesis, P-values y significancia',
+            text: 'Pruebas de hipótesis (t-test, chi-cuadrado), p-value, intervalos de confianza y errores tipo I/II',
           },
         ],
       },
@@ -90,17 +90,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f1-t4-i1',
             duration: '2 Días',
-            text: 'Numpy Avanzado: Broadcasting, Vectorización',
+            text: 'NumPy avanzado: vectorización, broadcasting, máscaras booleanas y optimización de operaciones',
           },
           {
             id: 'f1-t4-i2',
             duration: '3 Días',
-            text: 'Pandas: Manipulación de DataFrames, Window Functions',
+            text: 'Pandas/Polars: joins, groupby, window functions, feature tables limpias para entrenamiento',
           },
           {
             id: 'f1-t4-i3',
             duration: '2 Días',
-            text: 'Matplotlib y Seaborn: EDA avanzado',
+            text: 'EDA reproducible con Matplotlib/Seaborn: detección de sesgos, leakage y outliers',
           },
         ],
       },
@@ -122,17 +122,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f2-t1-i1',
             duration: '2 Días',
-            text: 'SQL Avanzado: CTEs, Window Functions',
+            text: 'SQL avanzado para analítica: CTEs, window functions, subqueries correlacionadas y optimización de consultas',
           },
           {
             id: 'f2-t1-i2',
             duration: '3 Días',
-            text: 'PostgreSQL: Modelado analítico, índices',
+            text: 'PostgreSQL para ML: modelado estrella, índices B-tree/GIN, particionado y planes de ejecución (EXPLAIN)',
           },
           {
             id: 'f2-t1-i3',
             duration: '2 Días',
-            text: 'Integración Python-SQL: SQLAlchemy, Polars',
+            text: 'Conexión Python-SQL: SQLAlchemy, transacciones, carga incremental y validación de calidad de datos',
           },
         ],
       },
@@ -144,22 +144,22 @@ export const ROADMAP_DATA = [
           {
             id: 'f2-t2-i1',
             duration: '3 Días',
-            text: 'Procesamiento de texto crudo (Regex, Tokenización)',
+            text: 'Texto crudo: limpieza, normalización Unicode, regex robustas, tokenización y deduplicación',
           },
           {
             id: 'f2-t2-i2',
             duration: '4 Días',
-            text: 'Manejo de imágenes y audio a nivel de tensores',
+            text: 'Datos de imagen/audio: formatos, sampling rate, augmentations y transformación a tensores',
           },
           {
             id: 'f2-t2-i3',
             duration: '4 Días',
-            text: 'Construcción de pipelines ETL/ELT',
+            text: 'Pipelines ETL/ELT: orquestación con Airflow/Prefect, idempotencia, retries y monitoreo',
           },
           {
             id: 'f2-t2-i4',
             duration: '3 Días',
-            text: 'Data Imputation: Manejo de nulos (NaN) y outliers',
+            text: 'Data quality: imputación de nulos, tratamiento de outliers, drift de esquema y reglas de validación',
           },
         ],
       },
@@ -181,22 +181,22 @@ export const ROADMAP_DATA = [
           {
             id: 'f3-t1-i1',
             duration: '3 Días',
-            text: 'Regresión Lineal y Logística (Fundamentos)',
+            text: 'Regresión lineal y logística: supuestos, regularización L1/L2 e interpretación de coeficientes',
           },
           {
             id: 'f3-t1-i2',
             duration: '3 Días',
-            text: 'Support Vector Machines (SVM) y Kernel Trick',
+            text: 'SVM (lineal/RBF): margen máximo, kernel trick, tuning de C y gamma',
           },
           {
             id: 'f3-t1-i3',
             duration: '4 Días',
-            text: 'Árboles de Decisión y Random Forests',
+            text: 'Árboles y Random Forest: criterios de partición, feature importance y control de overfitting',
           },
           {
             id: 'f3-t1-i4',
             duration: '4 Días',
-            text: 'Gradient Boosting: XGBoost y LightGBM',
+            text: 'Gradient boosting con XGBoost/LightGBM: early stopping, manejo de desbalance y tuning eficiente',
           },
         ],
       },
@@ -208,12 +208,12 @@ export const ROADMAP_DATA = [
           {
             id: 'f3-t2-i1',
             duration: '3 Días',
-            text: 'Clustering: K-Means, DBSCAN',
+            text: 'Clustering (K-Means, DBSCAN, HDBSCAN): selección de hiperparámetros y validación de clusters',
           },
           {
             id: 'f3-t2-i2',
             duration: '4 Días',
-            text: 'Reducción de Dimensionalidad: PCA, t-SNE, UMAP',
+            text: 'Reducción de dimensionalidad (PCA, t-SNE, UMAP): visualización y preservación de estructura local/global',
           },
         ],
       },
@@ -225,22 +225,22 @@ export const ROADMAP_DATA = [
           {
             id: 'f3-t3-i1',
             duration: '1 Día',
-            text: 'Codificación categórica (One-Hot, Target)',
+            text: 'Feature engineering: one-hot, target encoding, escalado robusto y manejo de cardinalidad alta',
           },
           {
             id: 'f3-t3-i2',
             duration: '2 Días',
-            text: 'Métricas Clasificación: Precisión, Recall, F1, ROC-AUC',
+            text: 'Evaluación de clasificación: precision/recall/F1, ROC-AUC, PR-AUC y calibración de probabilidades',
           },
           {
             id: 'f3-t3-i3',
             duration: '2 Días',
-            text: 'Métricas Regresión: RMSE, MAE, R Cuadrado',
+            text: 'Evaluación de regresión: RMSE, MAE, MAPE, R2 y análisis de residuos',
           },
           {
             id: 'f3-t3-i4',
             duration: '2 Días',
-            text: 'Validación Cruzada (K-Fold) y mitigación de Overfitting',
+            text: 'Validación (K-Fold/TimeSeriesSplit), leakage prevention y selección de modelo basada en experimentos',
           },
         ],
       },
@@ -262,22 +262,22 @@ export const ROADMAP_DATA = [
           {
             id: 'f4-t1-i1',
             duration: '3 Días',
-            text: 'Perceptrón Multicapa (MLP) y funciones de activación',
+            text: 'MLP y activaciones (ReLU, GELU, tanh): capacidad expresiva, saturación y flujo de gradientes',
           },
           {
             id: 'f4-t1-i2',
             duration: '4 Días',
-            text: 'Mecánica de Backpropagation (En profundidad)',
+            text: 'Backpropagation en detalle: cálculo manual de gradientes, exploding/vanishing gradients',
           },
           {
             id: 'f4-t1-i3',
             duration: '3 Días',
-            text: 'Optimizadores: Adam, RMSprop, SGD con Momentum',
+            text: 'Optimizadores (SGD+Momentum, RMSprop, AdamW): scheduler de learning rate y weight decay',
           },
           {
             id: 'f4-t1-i4',
             duration: '4 Días',
-            text: 'Regularización: Dropout, Batch Normalization',
+            text: 'Regularización: dropout, batch/layer norm, early stopping y data augmentation',
           },
         ],
       },
@@ -289,22 +289,22 @@ export const ROADMAP_DATA = [
           {
             id: 'f4-t2-i1',
             duration: '3 Días',
-            text: 'Tensores: Creación, manipulación y CUDA',
+            text: 'PyTorch tensores: operaciones, broadcasting, device placement (CPU/GPU) y profiling básico',
           },
           {
             id: 'f4-t2-i2',
             duration: '3 Días',
-            text: 'Autograd: Diferenciación automática',
+            text: 'Autograd y grafo computacional: backward pass, no_grad, mixed precision y grad clipping',
           },
           {
             id: 'f4-t2-i3',
             duration: '4 Días',
-            text: 'Construcción de modelos con torch.nn.Module',
+            text: 'Arquitectura de modelos con `torch.nn.Module`, bloques reutilizables y bucles de entrenamiento limpios',
           },
           {
             id: 'f4-t2-i4',
             duration: '4 Días',
-            text: 'DataLoaders y DataSets',
+            text: 'Dataset/DataLoader: batching, shuffling, collate_fn y pipelines de datos reproducibles',
           },
         ],
       },
@@ -316,12 +316,12 @@ export const ROADMAP_DATA = [
           {
             id: 'f4-t3-i1',
             duration: '7 Días',
-            text: 'CNNs: Filtros, Pooling, ResNets para Visión',
+            text: 'CNNs para visión: convolución, pooling, transferencia de aprendizaje (ResNet/EfficientNet)',
           },
           {
             id: 'f4-t3-i2',
             duration: '7 Días',
-            text: 'RNNs Clásicas: LSTM y GRU para secuencias',
+            text: 'Modelado secuencial con LSTM/GRU: teacher forcing, longitud variable y evaluación temporal',
           },
         ],
       },
@@ -343,17 +343,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f5-t1-i1',
             duration: '4 Días',
-            text: 'Word Embeddings a Sentence Embeddings',
+            text: 'Embeddings: Word2Vec/FastText a sentence embeddings (SBERT), similitud semántica y clustering',
           },
           {
             id: 'f5-t1-i2',
             duration: '5 Días',
-            text: 'Mecanismos de Atención (Self & Multi-Head)',
+            text: 'Atención (self/multi-head): Q-K-V, máscaras causales y costo computacional O(n2)',
           },
           {
             id: 'f5-t1-i3',
             duration: '5 Días',
-            text: 'Arquitectura Transformer ("Attention is All You Need")',
+            text: 'Transformer completo: encoder/decoder, positional encoding y pretraining vs fine-tuning',
           },
         ],
       },
@@ -365,22 +365,22 @@ export const ROADMAP_DATA = [
           {
             id: 'f5-t2-i1',
             duration: '3 Días',
-            text: 'Concepto de RAG y Estrategias de chunks/overlap',
+            text: 'RAG end-to-end: chunking por estructura, overlap, metadatos y estrategia de recuperación híbrida',
           },
           {
             id: 'f5-t2-i2',
             duration: '4 Días',
-            text: 'Bases Vectoriales: pgvector, Pinecone, Milvus',
+            text: 'Vector DBs (pgvector, Pinecone, Milvus): indexación HNSW/IVF, filtros y persistencia',
           },
           {
             id: 'f5-t2-i3',
             duration: '4 Días',
-            text: 'Búsqueda Semántica: Coseno, Euclidiana',
+            text: 'Búsqueda semántica: cosine/dot/euclidean, reranking (cross-encoder) y MMR',
           },
           {
             id: 'f5-t2-i4',
             duration: '3 Días',
-            text: 'Evaluación de RAG (RAGAS, Triada de TruLens)',
+            text: 'Evaluación de RAG: groundedness, relevancia, faithfulness; uso de RAGAS y TruLens',
           },
         ],
       },
@@ -392,22 +392,22 @@ export const ROADMAP_DATA = [
           {
             id: 'f5-t3-i1',
             duration: '1 Día',
-            text: 'Orquestación: LangChain y LlamaIndex',
+            text: 'Orquestación de flujos LLM con LangChain/LlamaIndex: chains, routers y memoria controlada',
           },
           {
             id: 'f5-t3-i2',
             duration: '2 Días',
-            text: 'Prompting: Chain of Thought, ReAct, Few-Shot',
+            text: 'Prompt engineering avanzado: few-shot, ReAct, structured output (JSON schema) y guardrails',
           },
           {
             id: 'f5-t3-i3',
             duration: '2 Días',
-            text: 'Patrones de Agentes (Tool use, Plan & Execute)',
+            text: 'Patrones de agentes: tool-use, plan-and-execute, manejo de contexto y recuperación de errores',
           },
           {
             id: 'f5-t3-i4',
             duration: '2 Días',
-            text: 'Model Context Protocol (MCP): Integración universal',
+            text: 'MCP aplicado: diseño de servidores de herramientas, seguridad, permisos y observabilidad',
           },
         ],
       },
@@ -419,17 +419,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f5-t4-i1',
             duration: '4 Días',
-            text: 'Hugging Face: Transformers, Datasets',
+            text: 'Ecosistema Hugging Face: `transformers`, `datasets`, tokenizers y pipelines reproducibles',
           },
           {
             id: 'f5-t4-i2',
             duration: '5 Días',
-            text: 'PEFT: LoRA y QLoRA (Fine-Tuning eficiente)',
+            text: 'Fine-tuning eficiente con PEFT (LoRA/QLoRA): preparación de dataset y evaluación post-entrenamiento',
           },
           {
             id: 'f5-t4-i3',
             duration: '5 Días',
-            text: 'Cuantización de modelos (GGUF, AWQ)',
+            text: 'Optimización de inferencia: cuantización (GGUF, AWQ, GPTQ), trade-offs de latencia vs calidad',
           },
         ],
       },
@@ -451,17 +451,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f6-t1-i1',
             duration: '2 Días',
-            text: 'Docker para ML (optimizando tamaño)',
+            text: 'Docker para ML/LLM: imágenes multi-stage, caché de dependencias y seguridad base image',
           },
           {
             id: 'f6-t1-i2',
             duration: '2 Días',
-            text: 'Servir vía APIs (FastAPI, gRPC)',
+            text: 'Serving de modelos con FastAPI/gRPC: batching, timeouts, rate limits y manejo de errores',
           },
           {
             id: 'f6-t1-i3',
             duration: '3 Días',
-            text: 'Inferencia Asíncrona (Celery, Kafka)',
+            text: 'Inferencia asíncrona con colas (Celery/Kafka/RQ): retries, DLQ e idempotencia',
           },
         ],
       },
@@ -473,17 +473,17 @@ export const ROADMAP_DATA = [
           {
             id: 'f6-t2-i1',
             duration: '4 Días',
-            text: 'Kubernetes para ML: KServe o Seldon Core',
+            text: 'Kubernetes para serving: KServe/Seldon, autoscaling, rollout progresivo y observabilidad',
           },
           {
             id: 'f6-t2-i2',
             duration: '5 Días',
-            text: 'Despliegue AWS (SageMaker) o GCP (Vertex)',
+            text: 'Cloud deployment: SageMaker o Vertex AI, endpoints, pipelines y gestión de costos',
           },
           {
             id: 'f6-t2-i3',
             duration: '5 Días',
-            text: 'Gestión de recursos GPU en la nube',
+            text: 'Gestión de GPU: selección de instancia, scheduling, mixed precision y optimización de throughput',
           },
         ],
       },
@@ -495,25 +495,128 @@ export const ROADMAP_DATA = [
           {
             id: 'f6-t3-i1',
             duration: '1 Día',
-            text: 'Experiment Tracking (MLflow, W&B)',
+            text: 'Experiment tracking con MLflow/W&B: versionado de parámetros, métricas y artefactos',
           },
           {
             id: 'f6-t3-i2',
             duration: '2 Días',
-            text: 'Model Registry: Versionado de pesos',
+            text: 'Model registry: versionado, promoción por entornos (dev/staging/prod) y trazabilidad',
           },
           {
             id: 'f6-t3-i3',
             duration: '2 Días',
-            text: 'CI/CD para ML: Retraining pipelines',
+            text: 'CI/CD para ML: tests de datos/modelo, retraining automático y validación antes de despliegue',
           },
           {
             id: 'f6-t3-i4',
             duration: '2 Días',
-            text: 'Monitoreo: Data Drift y Concept Drift',
+            text: 'Monitoreo en producción: data drift, concept drift, performance decay y alertas accionables',
           },
         ],
       },
+    ],
+  },
+];
+
+export const SPECIALIZATION_ROUTES = [
+  {
+    id: 'route-llm',
+    title: 'LLM Engineer',
+    summary:
+      'Construcción de productos con modelos fundacionales: RAG, agentes, evaluación y seguridad de prompts.',
+    focus: ['RAG avanzado', 'Agentes con herramientas', 'Evaluación LLM', 'Serving de inferencia'],
+    stack: ['Python', 'LangChain/LlamaIndex', 'OpenAI/Anthropic/HF', 'Vector DB', 'FastAPI'],
+    outcomes: [
+      'Chatbots empresariales con contexto confiable',
+      'Asistentes internos para productividad',
+      'Copilots de soporte técnico o ventas',
+    ],
+  },
+  {
+    id: 'route-mlops',
+    title: 'ML Platform / MLOps Engineer',
+    summary:
+      'Diseño de plataformas para entrenamiento, deployment y observabilidad de modelos en producción.',
+    focus: ['Pipelines reproducibles', 'CI/CD de modelos', 'Monitoreo de drift', 'Escalado en cloud'],
+    stack: ['Docker', 'Kubernetes', 'MLflow/W&B', 'Airflow/Prefect', 'AWS/GCP'],
+    outcomes: [
+      'Plataformas internas de ML',
+      'Automatización de retraining',
+      'Gobernanza y versionado de modelos',
+    ],
+  },
+  {
+    id: 'route-cv',
+    title: 'Computer Vision Engineer',
+    summary:
+      'Sistemas de visión para detección, clasificación y análisis visual en tiempo real o batch.',
+    focus: ['CNN/Transformers de visión', 'Data augmentation', 'Métricas de detección', 'Optimización edge'],
+    stack: ['PyTorch', 'OpenCV', 'YOLO/Detectron2', 'ONNX/TensorRT', 'CUDA'],
+    outcomes: [
+      'Control de calidad industrial',
+      'Sistemas de videovigilancia inteligente',
+      'Clasificadores visuales para e-commerce/salud',
+    ],
+  },
+  {
+    id: 'route-applied-ml',
+    title: 'Applied ML Engineer',
+    summary:
+      'Solución de problemas de negocio con modelos tabulares y sistemas híbridos de decisión.',
+    focus: ['Feature engineering', 'Modelado clásico', 'Experimentación', 'Causalidad básica'],
+    stack: ['scikit-learn', 'XGBoost/LightGBM', 'SQL', 'Pandas/Polars', 'FastAPI'],
+    outcomes: [
+      'Sistemas de scoring y riesgo',
+      'Predicción de demanda y churn',
+      'Optimización de pricing y fraude',
+    ],
+  },
+];
+
+export const CAREER_PATHS = [
+  {
+    id: 'career-junior',
+    title: 'Ruta de Entrada (0-1 año)',
+    profile: 'AI/ML Junior Engineer',
+    responsibilities: [
+      'Implementar pipelines y notebooks reproducibles',
+      'Entrenar/evaluar modelos base con supervisión',
+      'Construir APIs de inferencia simples',
+    ],
+    hiringSignals: [
+      '2-3 proyectos end-to-end publicados',
+      'Buen dominio de Python + SQL',
+      'Capacidad de explicar decisiones de modelado',
+    ],
+  },
+  {
+    id: 'career-mid',
+    title: 'Ruta de Consolidación (1-3 años)',
+    profile: 'AI Engineer / LLM Engineer',
+    responsibilities: [
+      'Diseñar arquitectura de sistemas con IA',
+      'Optimizar costo/latencia/calidad en producción',
+      'Definir evaluación y monitoreo continuo',
+    ],
+    hiringSignals: [
+      'Impacto medible en producto/negocio',
+      'Experiencia con cloud y observabilidad',
+      'Capacidad de liderar módulos técnicos',
+    ],
+  },
+  {
+    id: 'career-senior',
+    title: 'Ruta de Liderazgo (3+ años)',
+    profile: 'Senior/Lead AI Engineer o AI Architect',
+    responsibilities: [
+      'Definir estrategia técnica de IA de la organización',
+      'Establecer estándares de seguridad y gobernanza',
+      'Mentorear equipos y priorizar roadmap por impacto',
+    ],
+    hiringSignals: [
+      'Arquitecturas escalables en producción real',
+      'Ownership de decisiones transversales',
+      'Visión de producto + excelencia técnica',
     ],
   },
 ];

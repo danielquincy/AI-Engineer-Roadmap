@@ -11,8 +11,17 @@ import {
   ListTodo,
   Timer,
   Check,
+  Route,
+  BriefcaseBusiness,
+  Target,
+  Layers,
+  GraduationCap,
 } from 'lucide-react';
-import { ROADMAP_DATA } from './data/roadmapData.js';
+import {
+  ROADMAP_DATA,
+  SPECIALIZATION_ROUTES,
+  CAREER_PATHS,
+} from './data/roadmapData.js';
 
 const App = () => {
   const [progress, setProgress] = useState({});
@@ -75,9 +84,14 @@ const App = () => {
     return { totalItems, completedItems, percentage };
   }, [progress]);
 
+  const totalEstimatedWeeks = useMemo(
+    () => ROADMAP_DATA.reduce((acc, phase) => acc + phase.estimatedWeeks, 0),
+    []
+  );
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans p-4 md:p-8">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <header className="mb-10 text-center relative">
           <div className="absolute top-0 right-0 z-50 text-left">
             <button
@@ -121,7 +135,7 @@ const App = () => {
                 </div>
                 <div className="bg-slate-800 text-white p-4 flex justify-between items-center">
                   <span className="font-semibold text-sm">Tiempo Total Estimado</span>
-                  <span className="font-bold text-green-400">~28 Semanas</span>
+                  <span className="font-bold text-green-400">~{totalEstimatedWeeks} semanas</span>
                 </div>
               </div>
             )}
@@ -130,14 +144,24 @@ const App = () => {
           <div className="inline-flex items-center justify-center p-3 bg-blue-600 rounded-full mb-4 mt-12 sm:mt-0 shadow-lg shadow-blue-200">
             <Trophy className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
-            AI Engineer Roadmap
+          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-2 tracking-tight">
+            AI Engineer Career Roadmap
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Aplicación interactiva para transicionar de Backend a IA. Selecciona la pestaña{' '}
-            <span className="font-semibold">&quot;Timelapse&quot;</span> en cualquier tema para ver
-            tu plan de estudio diario.
+          <p className="text-base md:text-lg text-slate-600 max-w-3xl mx-auto">
+            Plataforma interactiva para estudiar IA con enfoque profesional, priorizar tu
+            especialización y visualizar rutas laborales reales.
           </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            <span className="text-xs font-semibold bg-white border border-slate-200 text-slate-600 px-3 py-1 rounded-full">
+              6 fases
+            </span>
+            <span className="text-xs font-semibold bg-white border border-slate-200 text-slate-600 px-3 py-1 rounded-full">
+              {stats.totalItems} objetivos de estudio
+            </span>
+            <span className="text-xs font-semibold bg-white border border-slate-200 text-slate-600 px-3 py-1 rounded-full">
+              ~{totalEstimatedWeeks} semanas
+            </span>
+          </div>
         </header>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8 sticky top-4 z-40">
@@ -165,8 +189,164 @@ const App = () => {
           </div>
         </div>
 
+        <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="bg-blue-100 text-blue-700 p-2 rounded-xl">
+              <Route className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800">
+                Subrutas de Especialización
+              </h2>
+              <p className="text-sm text-slate-500">
+                Elige un enfoque principal según el tipo de problemas que quieres resolver.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {SPECIALIZATION_ROUTES.map((route) => (
+              <article
+                key={route.id}
+                className="rounded-2xl border border-slate-200 p-4 bg-slate-50/60 hover:border-blue-200 transition-colors"
+              >
+                <h3 className="font-bold text-slate-800 text-base mb-1">{route.title}</h3>
+                <p className="text-sm text-slate-600 mb-3">{route.summary}</p>
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                      Foco técnico
+                    </div>
+                    <ul className="text-sm text-slate-700 space-y-1">
+                      {route.focus.map((item) => (
+                        <li key={`${route.id}-focus-${item}`}>• {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                      Stack sugerido
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {route.stack.map((tech) => (
+                        <span
+                          key={`${route.id}-stack-${tech}`}
+                          className="text-xs font-medium bg-white border border-slate-200 text-slate-600 px-2 py-1 rounded-md"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">
+                      Proyectos objetivo
+                    </div>
+                    <ul className="text-sm text-slate-700 space-y-1">
+                      {route.outcomes.map((outcome) => (
+                        <li key={`${route.id}-outcome-${outcome}`}>• {outcome}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 mb-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="bg-emerald-100 text-emerald-700 p-2 rounded-xl">
+              <BriefcaseBusiness className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800">Rumbos Laborales</h2>
+              <p className="text-sm text-slate-500">
+                Qué se espera de ti en cada etapa de carrera y cómo demostrar nivel.
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {CAREER_PATHS.map((career) => (
+              <article
+                key={career.id}
+                className="rounded-2xl border border-slate-200 p-4 bg-slate-50/60"
+              >
+                <p className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-1 rounded w-max mb-2">
+                  {career.title}
+                </p>
+                <h3 className="font-bold text-slate-800 mb-3">{career.profile}</h3>
+                <div className="mb-3">
+                  <div className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                    Responsabilidades
+                  </div>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    {career.responsibilities.map((item) => (
+                      <li key={`${career.id}-resp-${item}`}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-1">
+                    Senales de contratacion
+                  </div>
+                  <ul className="text-sm text-slate-700 space-y-1">
+                    {career.hiringSignals.map((item) => (
+                      <li key={`${career.id}-signal-${item}`}>• {item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl shadow-sm p-6 md:p-8 mb-8 text-white">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex gap-3">
+              <div className="bg-white/10 p-2 rounded-lg h-max">
+                <Target className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">Define un objetivo trimestral</h3>
+                <p className="text-sm text-slate-300">
+                  Enfocate en una subruta principal y un proyecto ancla.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="bg-white/10 p-2 rounded-lg h-max">
+                <Layers className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">Construye portafolio por modulos</h3>
+                <p className="text-sm text-slate-300">
+                  Cada fase debe terminar con una entrega publica verificable.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="bg-white/10 p-2 rounded-lg h-max">
+                <GraduationCap className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">Evalua progreso con evidencia</h3>
+                <p className="text-sm text-slate-300">
+                  Mide calidad por metricas, documentacion y resultados en produccion.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div className="mb-5">
+          <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Modulos de Estudio</h2>
+          <p className="text-sm text-slate-500 mt-1">
+            Expande cada fase y usa vista checklist o timelapse para ejecutar tu plan diario.
+          </p>
+        </div>
+
         <div className="space-y-6">
-          {ROADMAP_DATA.map((phase) => {
+          {ROADMAP_DATA.map((phase, index) => {
             const PhaseIcon = phase.icon;
             const isExpanded = expandedPhases.includes(phase.id);
 
@@ -214,6 +394,9 @@ const App = () => {
                             : 'text-slate-800'
                         }`}
                       >
+                        <span className="text-sm font-semibold text-slate-400 mr-2">
+                          Modulo {index + 1}
+                        </span>
                         {phase.title}
                       </h3>
                       <p className="text-sm md:text-base text-slate-500 mt-1 hidden sm:block max-w-2xl">
@@ -224,7 +407,7 @@ const App = () => {
                   <div className="flex items-center space-x-3 md:space-x-5">
                     <div className="hidden md:flex flex-col items-end">
                       <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-                        Duración
+                        Duracion
                       </span>
                       <span className="text-sm font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
                         {phase.estimatedWeeks} semanas
@@ -312,22 +495,17 @@ const App = () => {
                                       key={item.id}
                                       className="flex items-start space-x-3 cursor-pointer group p-2 -mx-2 rounded-lg hover:bg-slate-50 transition-colors"
                                       onClick={() => handleToggleItem(item.id)}
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                          e.preventDefault();
-                                          handleToggleItem(item.id);
-                                        }
-                                      }}
-                                      role="button"
-                                      tabIndex={0}
                                     >
-                                      <span className="mt-0.5 focus:outline-none flex-shrink-0">
+                                      <button
+                                        type="button"
+                                        className="mt-0.5 focus:outline-none flex-shrink-0"
+                                      >
                                         {isChecked ? (
                                           <CheckCircle2 className="w-5 h-5 text-green-500" />
                                         ) : (
                                           <Circle className="w-5 h-5 text-slate-300 group-hover:text-blue-400 transition-colors" />
                                         )}
-                                      </span>
+                                      </button>
                                       <span
                                         className={`text-sm leading-snug transition-colors pt-0.5 ${
                                           isChecked
@@ -368,7 +546,7 @@ const App = () => {
                                                 : 'bg-blue-50 text-blue-700'
                                             }`}
                                           >
-                                            Dedicación: {item.duration}
+                                            Dedicacion: {item.duration}
                                           </span>
                                           <p
                                             className={`text-sm font-medium ${
